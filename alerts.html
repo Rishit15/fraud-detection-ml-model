@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRISM – Alerts & Monitoring</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>PRISM</h2>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="admin.html">Admin</a>
+      <a href="alerts.html" class="active">Alerts</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="layout">
+
+    <!-- Page Header -->
+    <header class="topbar">
+      <h1>Alerts & Monitoring</h1>
+      <div class="theme-controls">
+        <button class="theme-toggle-btn active" id="darkModeBtn" onclick="setTheme('dark')">🌙</button>
+        <button class="theme-toggle-btn" id="lightModeBtn" onclick="setTheme('light')">☀️</button>
+      </div>
+      <div class="header-controls">
+        <select id="alertFilter" class="filter-dropdown">
+          <option value="all">All Alerts</option>
+          <option value="high">High Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="low">Low Priority</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Alert KPI Cards -->
+    <section class="cards">
+      <div class="card alert">
+        <h3>Critical Alerts</h3>
+        <p id="kpi-critical">0</p>
+      </div>
+
+      <div class="card warning">
+        <h3>Warning Alerts</h3>
+        <p id="kpi-warning">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Total Alerts (24h)</h3>
+        <p id="kpi-total">0</p>
+      </div>
+
+      <div class="card success">
+        <h3>Resolved Alerts</h3>
+        <p id="kpi-resolved">0</p>
+      </div>
+    </section>
+
+    <!-- Active Alerts Panel -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Active Alerts</h2>
+        <div class="panel-actions">
+          <button id="clearAllBtn" class="btn-secondary">Clear All</button>
+          <button id="refreshBtn" class="btn-primary">Refresh</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Alert ID</th>
+            <th>Type</th>
+            <th>Severity</th>
+            <th>Description</th>
+            <th>Tender ID</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="activeAlertsTable">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Alert Statistics Panel -->
+    <section class="grid">
+
+      <!-- Alert Breakdown -->
+      <div class="panel">
+        <h2>Alert Breakdown (24h)</h2>
+        <div class="stats-container">
+          <div class="stat-item">
+            <span class="stat-label">Fraud Detected</span>
+            <span class="stat-value high" id="stat-fraud">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Abnormal Activity</span>
+            <span class="stat-value warning" id="stat-abnormal">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Price Anomalies</span>
+            <span class="stat-value warning" id="stat-price">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">System Alerts</span>
+            <span class="stat-value low" id="stat-system">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Actions Log -->
+      <div class="panel">
+        <h2>Action Log</h2>
+        <ul class="action-log" id="actionLog">
+          <li class="log-entry">
+            <span class="log-time">14:32</span>
+            <span class="log-message">System initialized</span>
+          </li>
+          <li class="log-entry">
+            <span class="log-time">14:31</span>
+            <span class="log-message">Alerts module loaded</span>
+          </li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- Alert Rules & Configuration -->
+    <section class="panel" style="margin-top: 2rem;">
+      <h2>Alert Configuration</h2>
+      
+      <div class="config-grid">
+        
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="fraudDetection" checked />
+            <span>Fraud Detection Alerts</span>
+          </label>
+          <small>Notify on detected fraud patterns</small>
+        </div>
+
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="abnormalActivity" checked />
+            <span>Abnormal Activity Alerts</span>
+          </label>
+          <small>Alert on unusual transfer patterns</small>
+        </div>
+
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="priceAnomalies" checked />
+            <span>Price Anomaly Alerts</span>
+          </label>
+          <small>Notify on irregular pricing</small>
+        </div>
+
+        <div class="config-item">
+          <label>
+            <input type="checkbox" id="systemAlerts" checked />
+            <span>System Alerts</span>
+          </label>
+          <small>General system notifications</small>
+        </div>
+
+      </div>
+
+      <button id="saveConfigBtn" class="btn-primary" style="margin-top: 1rem;">Save Configuration</button>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      PRISM Alert Management System • Last Updated: <span id="lastUpdate">--:--</span>
+    </footer>
+
+  </div>
+
+  <script src="ui.js"></script>
+  <script>
+    // Initialize theme first
+    document.addEventListener("DOMContentLoaded", function() {
+      initializeTheme();
+      console.log("Alerts page loading...");
+      generateMockAlerts();
+      updateAlertKPIs();
+      renderAlerts("all");
+      addToActionLog("Alerts dashboard initialized");
+    });
+    
+    // Alert Management Functions
+    const alertsData = [];
+    const alertTypes = {
+      fraud: { label: "Fraud Detected", severity: "high", color: "#f43f5e" },
+      abnormal: { label: "Abnormal Activity", severity: "medium", color: "#fb923c" },
+      price: { label: "Price Anomaly", severity: "medium", color: "#fb923c" },
+      system: { label: "System Alert", severity: "low", color: "#94a3b8" }
+    };
+
+    function generateMockAlerts() {
+      const tenders = ["T001", "T002", "T003", "T004", "T005"];
+      const types = Object.keys(alertTypes);
+      
+      for (let i = 0; i < 8; i++) {
+        alertsData.push({
+          id: `ALR-${1000 + i}`,
+          type: types[Math.floor(Math.random() * types.length)],
+          tenderId: tenders[Math.floor(Math.random() * tenders.length)],
+          description: `Alert triggered for unusual pattern detected`,
+          time: new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString(),
+          status: Math.random() > 0.6 ? "Resolved" : "Active"
+        });
+      }
+    }
+
+    function updateAlertKPIs() {
+      const critical = alertsData.filter(a => alertTypes[a.type]?.severity === "high").length;
+      const warning = alertsData.filter(a => alertTypes[a.type]?.severity === "medium").length;
+      const resolved = alertsData.filter(a => a.status === "Resolved").length;
+      
+      document.getElementById("kpi-critical").textContent = critical;
+      document.getElementById("kpi-warning").textContent = warning;
+      document.getElementById("kpi-total").textContent = alertsData.length;
+      document.getElementById("kpi-resolved").textContent = resolved;
+    }
+
+    function renderAlerts(filter = "all") {
+      const tbody = document.getElementById("activeAlertsTable");
+      tbody.innerHTML = "";
+      
+      let filtered = alertsData;
+      if (filter !== "all") {
+        filtered = alertsData.filter(a => alertTypes[a.type]?.severity === filter);
+      }
+
+      filtered.forEach(alert => {
+        const typeInfo = alertTypes[alert.type];
+        const row = document.createElement("tr");
+        row.className = `alert-row alert-${typeInfo.severity}`;
+        row.innerHTML = `
+          <td>${alert.id}</td>
+          <td>${typeInfo.label}</td>
+          <td><span class="severity-badge ${typeInfo.severity}">${typeInfo.severity.toUpperCase()}</span></td>
+          <td>${alert.description}</td>
+          <td>${alert.tenderId}</td>
+          <td>${alert.time}</td>
+          <td><span class="status-badge ${alert.status.toLowerCase()}">${alert.status}</span></td>
+          <td>
+            <button class="btn-small btn-secondary" onclick="acknowledgeAlert('${alert.id}')">Acknowledge</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      updateAlertStats();
+    }
+
+    function updateAlertStats() {
+      document.getElementById("stat-fraud").textContent = alertsData.filter(a => a.type === "fraud").length;
+      document.getElementById("stat-abnormal").textContent = alertsData.filter(a => a.type === "abnormal").length;
+      document.getElementById("stat-price").textContent = alertsData.filter(a => a.type === "price").length;
+      document.getElementById("stat-system").textContent = alertsData.filter(a => a.type === "system").length;
+      
+      document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
+    }
+
+    function acknowledgeAlert(alertId) {
+      const alert = alertsData.find(a => a.id === alertId);
+      if (alert) {
+        alert.status = "Resolved";
+        addToActionLog(`Alert ${alertId} acknowledged`);
+        renderAlerts(document.getElementById("alertFilter").value);
+      }
+    }
+
+    function addToActionLog(message) {
+      const actionLog = document.getElementById("actionLog");
+      const time = new Date().toLocaleTimeString();
+      const li = document.createElement("li");
+      li.className = "log-entry";
+      li.innerHTML = `<span class="log-time">${time}</span><span class="log-message">${message}</span>`;
+      actionLog.insertBefore(li, actionLog.firstChild);
+      
+      // Keep only last 10 entries
+      while (actionLog.children.length > 10) {
+        actionLog.removeChild(actionLog.lastChild);
+      }
+    }
+
+    function clearAllAlerts() {
+      if (confirm("Clear all alerts?")) {
+        alertsData.forEach(a => a.status = "Resolved");
+        addToActionLog("All alerts cleared");
+        renderAlerts("all");
+      }
+    }
+
+    // Event Listeners
+    document.getElementById("alertFilter").addEventListener("change", function() {
+      renderAlerts(this.value);
+    });
+
+    document.getElementById("clearAllBtn").addEventListener("click", clearAllAlerts);
+
+    document.getElementById("refreshBtn").addEventListener("click", function() {
+      addToActionLog("Alerts refreshed");
+      renderAlerts(document.getElementById("alertFilter").value);
+    });
+
+    document.getElementById("saveConfigBtn").addEventListener("click", function() {
+      const config = {
+        fraudDetection: document.getElementById("fraudDetection").checked,
+        abnormalActivity: document.getElementById("abnormalActivity").checked,
+        priceAnomalies: document.getElementById("priceAnomalies").checked,
+        systemAlerts: document.getElementById("systemAlerts").checked
+      };
+      localStorage.setItem("alertConfig", JSON.stringify(config));
+      addToActionLog("Configuration saved");
+      alert("Alert configuration saved successfully!");
+    });
+  </script>
+
+</body>
+</html>

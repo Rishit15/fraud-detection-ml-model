@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PRISM – Data Input</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>PRISM</h2>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="admin.html" class="active">Admin</a>
+      <a href="alerts.html">Alerts</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="layout">
+
+    <!-- Page Header -->
+    <header class="topbar">
+      <h1>Case Review Overview</h1>
+      <div class="theme-controls">
+        <button class="theme-toggle-btn active" id="darkModeBtn" onclick="setTheme('dark')">🌙</button>
+        <button class="theme-toggle-btn" id="lightModeBtn" onclick="setTheme('light')">☀️</button>
+      </div>
+    </header>
+
+    <!-- Review Cards (CORRECT LOCATION) -->
+    <section class="cards review-cards">
+      <div class="card warning">
+        <h3>Pending Review Cases</h3>
+        <p id="pending-review-count">0</p>
+      </div>
+
+      <div class="card alert">
+        <h3>Confirmed Fraud Cases</h3>
+        <p id="confirmed-fraud-count">0</p>
+      </div>
+
+      <div class="card success">
+        <h3>Rejected Fraud Cases</h3>
+        <p id="rejected-fraud-count">0</p>
+      </div>
+    </section>
+
+  <div class="layout">
+
+     <!-- ================= PENDING CASES ================= -->
+    <section class="panel">
+      <h2>Pending Review Cases</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tender ID</th>
+            <th>Tender Value</th>
+            <th>No. of Tenderers</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="pendingCasesTable">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= CONFIRMED CASES ================= -->
+    <section class="panel" style="margin-top: 2rem;">
+      <h2>Confirmed Fraud Cases</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tender ID</th>
+            <th>Tender Value</th>
+            <th>No. of Tenderers</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="approvedCasesTable">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= REJECTED CASES ================= -->
+    <section class="panel" style="margin-top: 2rem;">
+      <h2>Rejected Fraud Cases</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tender ID</th>
+            <th>Tender Value</th>
+            <th>No. of Tenderers</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="rejectedCasesTable">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      PRISM Case Management • <span id="caseCount">0</span> Total Cases
+    </footer>
+
+  </div>
+
+  <script src="ui.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("Admin page init...");
+      initializeTheme();
+    });
+  </script>
+</body>
+</html>
