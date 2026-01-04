@@ -110,20 +110,13 @@
 
   </div>
 
+  <script src="config.js"></script>
   <script src="ui.js"></script>
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    console.log("Dashboard starting...");
-    initializeTheme();
-    fetchDashboardData().then(function(data) {
-      console.log("Data loaded:", data.length, "items");
-      renderDashboard(data);
-      console.log("Dashboard complete");
-  }).catch(function(error) {
-    console.error("Dashboard failed:", error);
+  document.addEventListener("DOMContentLoaded", () => {
+    initializeTheme(); // From ui.js
+    fetchDashboardData().then(data => renderDashboard(data));
   });
-});
 </script>
-
 </body>
 </html>
