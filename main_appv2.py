@@ -19,36 +19,52 @@ df_master['tender_value_amount'] = pd.to_numeric(df_master['tender_value_amount'
 df_master['tender_numberOfTenderers'] = pd.to_numeric(df_master['tender_numberOfTenderers'], errors='coerce').fillna(0)
 @app.route('/api/anomalies')
 def get_anomalies():
-    df_master['status'] = 'Clean'
+    
+    global df_master
+    
+    if 'status' not in df_master.columns:
+        df_master['status'] = 'Clean'
+
+    manual_mask = df_master['status'].isin(['Confirmed', 'Rejected'])
+    
     
     df = df_master.copy()
+    
     model = IsolationForest(contamination=0.05, random_state=42)
     scaler1 = StandardScaler()
     a, b = -0.80, -1
+    
+    
     for iteration in range(1, 6):
         if df.empty: break
         scaled_data = scaler1.fit_transform(df[['tender_value_amount']])
         model.fit(scaled_data)
         scores = model.decision_function(scaled_data)
         
-        
         m_scaler = MinMaxScaler(feature_range=(-1, 1))
         scaled_scores = m_scaler.fit_transform(scores.reshape(-1, 1))
         
         df['is_anomaly'] = (scaled_scores < a) & (scaled_scores > b)
         anomaly_indices = df[df['is_anomaly']==True].index
+        
+    
+        target_indices = [idx for idx in anomaly_indices if not manual_mask[idx]]
+        
         if iteration == 1: 
             a, b = -0.60, -0.80
-            df_master.loc[anomaly_indices,'status'] = 'Rejected'
+            df_master.loc[target_indices, 'status'] = 'Rejected'
         elif iteration == 2: 
             a, b = -0.40, -0.60
-            df_master.loc[anomaly_indices,'status'] = 'Pending'
+            df_master.loc[target_indices, 'status'] = 'Pending'
         elif iteration == 3: 
              a, b = 0, -0.40
         elif iteration == 4: 
-            df_master.loc[anomaly_indices,'status'] = 'Confirmed'
+        
+            df_master.loc[target_indices, 'status'] = 'Confirmed'
+            
         df = df[~df['is_anomaly']].copy() 
 
+    
     activity_feed = []
     for _, row in df_master.head(20).iterrows():
         activity_feed.append({
@@ -58,7 +74,9 @@ def get_anomalies():
             "date": str(row.get('tender_datePublished', 'N/A'))[:10],
             "buyer": str(row.get('buyer_name', 'Unknown'))
         })
+
     df_master['status'] = df_master['status'].fillna('Clean')
+    
     clean_data = df_master[['tender_id', 'tender_value_amount', 'tender_numberOfTenderers', 'status']].fillna({
         'tender_id': 'N/A',
         'tender_value_amount': 0,
@@ -76,10 +94,10 @@ def update_case(tender_id):
     try:
         data = request.get_json()
         new_status = data.get('status')
-        
+        global df_master
+        df_master.loc[df_master['tender_id'] == tender_id, 'status'] = new_status
+
         print(f"✅ Tender {tender_id} → {new_status}")
-        
-        # TODO: persist to CSV/DB
         return jsonify({
             'success': True,
             'tender_id': tender_id,
