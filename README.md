@@ -1,4 +1,4 @@
-# 🔍 PRISM - public risk & integrity management mechanism
+# 🔍 PRISM - public risk & integrity surveillance mechanism
 > **PRISM**: Predictive Risk Identification System for Monitoring  
 > An intelligent fraud detection dashboard for monitoring tender processes and identifying suspicious financial transfers in real-time.
 
