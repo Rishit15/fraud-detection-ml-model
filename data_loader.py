@@ -2,10 +2,10 @@ import pandas as pd
 import os
 
 def load_data(limit=50000):
-    csv_file = "main.csv" 
+    csv_file = "C:\\Users\\RISHIT\\.vscode\\webdev\\dashboard\\prism ai\\main.csv" 
     
     if not os.path.exists(csv_file):
-        print(f"Error: {csv_file} not found. Ensure the CSV is in your Windows Downloads.")
+        print(f"Error: {csv_file} not found. Ensure the CSV is in your current directory.")
         return None
 
     print(f"Loading data locally from {csv_file}...")
@@ -17,3 +17,4 @@ def load_data(limit=50000):
     except Exception as e:
         print(f"Error loading CSV: {e}")
         return None
+        
