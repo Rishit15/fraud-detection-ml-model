@@ -27,10 +27,7 @@
     <!-- Top Bar -->
     <header class="topbar">
       <h1>Dashboard Overview</h1>
-      <div class="theme-controls">
-        <button class="theme-toggle-btn active" id="darkModeBtn" onclick="setTheme('dark')">🌙</button>
-        <button class="theme-toggle-btn" id="lightModeBtn" onclick="setTheme('light')">☀️</button>
-      </div>
+
     </header>
 
 
@@ -116,6 +113,15 @@
   document.addEventListener("DOMContentLoaded", () => {
     initializeTheme(); // From ui.js
     fetchDashboardData().then(data => renderDashboard(data));
+
+    // Auto-refresh logic based on settings
+    const settings = JSON.parse(localStorage.getItem('prismSettings')) || {};
+    const refreshMinutes = parseInt(settings.autoRefresh);
+    if (refreshMinutes && refreshMinutes > 0) {
+      setInterval(() => {
+        fetchDashboardData().then(data => renderDashboard(data));
+      }, refreshMinutes * 60 * 1000);
+    }
   });
 </script>
 </body>
