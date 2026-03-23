@@ -1,654 +1,661 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PRISM – Settings</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    /* Light Mode Theme */
-    body.light-mode {
-      --bg-dark: #f8fafc;
-      --bg-card: #e2e8f0;
-      --bg-soft: #f1f5f9;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --glass-border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    body.light-mode .sidebar {
-      background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
-      border-right: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    body.light-mode .sidebar nav a {
-      color: #475569;
-    }
-
-    body.light-mode .sidebar nav a:hover,
-    body.light-mode .sidebar nav a.active {
-      background: rgba(56, 189, 248, 0.15);
-      color: #0284c7;
-    }
-
-    body.light-mode table {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-    }
-
-    body.light-mode table thead {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-
-    body.light-mode table tbody tr:hover {
-      background: #f8fafc;
-    }
-
-    body.light-mode .panel {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-    }
-
-    body.light-mode .card {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-    }
-
-    body.light-mode input[type="text"],
-    body.light-mode input[type="email"],
-    body.light-mode input[type="number"],
-    body.light-mode select,
-    body.light-mode textarea {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      color: #0f172a;
-    }
-
-    body.light-mode input[type="text"]:focus,
-    body.light-mode input[type="email"]:focus,
-    body.light-mode input[type="number"]:focus,
-    body.light-mode select:focus,
-    body.light-mode textarea:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.1);
-    }
-
-    /* Settings Styles */
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .settings-panel {
-      background: var(--bg-card);
-      border: var(--glass-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .settings-panel h3 {
-      color: var(--accent-blue);
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .settings-panel h3::before {
-      content: '';
-      display: inline-block;
-      width: 4px;
-      height: 20px;
-      background: var(--accent-blue);
-      border-radius: 2px;
-    }
-
-    .setting-item {
-      margin-bottom: 1.5rem;
-    }
-
-    .setting-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .setting-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .setting-label label {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .setting-label small {
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="number"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.75rem;
-      background: var(--bg-dark);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="number"]:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--accent-blue);
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.1);
-    }
-
-    .toggle-switch {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 28px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.3s;
-      border-radius: 28px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: '';
-      height: 22px;
-      width: 22px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: 0.3s;
-      border-radius: 50%;
-    }
-
-    input:checked+.slider {
-      background-color: var(--accent-blue);
-    }
-
-    input:checked+.slider:before {
-      transform: translateX(22px);
-    }
-
-    .theme-toggle {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .theme-btn {
-      flex: 1;
-      padding: 0.75rem;
-      border: 2px solid rgba(56, 189, 248, 0.3);
-      background: var(--bg-dark);
-      color: var(--text-primary);
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .theme-btn:hover {
-      border-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.1);
-    }
-
-    .theme-btn.active {
-      border-color: var(--accent-blue);
-      background: var(--accent-blue);
-      color: var(--bg-dark);
-    }
-
-    .btn-primary,
-    .btn-secondary {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 8px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 0.95rem;
-    }
-
-    .btn-primary {
-      background: var(--accent-blue);
-      color: #000;
-    }
-
-    .btn-primary:hover {
-      background: #06b6d4;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--text-secondary);
-      color: var(--text-secondary);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--accent-blue);
-      color: var(--accent-blue);
-    }
-
-    .button-group {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .success-message {
-      background: rgba(74, 222, 128, 0.1);
-      border: 1px solid var(--accent-green);
-      color: var(--accent-green);
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: none;
-    }
-
-    .info-box {
-      background: rgba(56, 189, 248, 0.1);
-      border-left: 3px solid var(--accent-blue);
-      padding: 1rem;
-      border-radius: 4px;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <h2>PRISM</h2>
-    <nav>
-      <a href="index.html">Dashboard</a>
-      <a href="admin.html">Admin</a>
-      <a href="alerts.html">Alerts</a>
-      <a href="settings.html" class="active">Settings</a>
-    </nav>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <div class="layout">
-
-    <!-- Page Header -->
-    <header class="topbar">
-      <h1>Settings & Preferences</h1>
-    </header>
-
-    <!-- Success Message -->
-    <div class="success-message" id="successMessage">
-      ✓ Settings saved successfully!
-    </div>
-
-    <!-- Theme Settings (Full Width) -->
-    <section class="panel">
-      <h2>Theme Settings</h2>
-      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Choose your preferred color theme</p>
-      <div class="theme-toggle">
-        <button class="theme-btn active" id="darkModeBtn" onclick="setTheme('dark')">
-          🌙 Dark Mode
-        </button>
-        <button class="theme-btn" id="lightModeBtn" onclick="setTheme('light')">
-          ☀️ Light Mode
-        </button>
-      </div>
-    </section>
-
-    <!-- Settings Grid -->
-    <div class="settings-grid">
-
-      <!-- System Settings -->
-      <section class="settings-panel">
-        <h3>System Settings</h3>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Language</label>
-          </div>
-          <select id="language">
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="pt">Portuguese</option>
-          </select>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Date Format</label>
-          </div>
-          <select id="dateFormat">
-            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-          </select>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Time Zone</label>
-          </div>
-          <select id="timezone">
-            <option value="UTC">UTC</option>
-            <option value="EST">EST</option>
-            <option value="CST">CST</option>
-            <option value="MST">MST</option>
-            <option value="PST">PST</option>
-            <option value="IST">IST</option>
-          </select>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Auto-refresh Data</label>
-            <small>Minutes</small>
-          </div>
-          <input type="number" id="autoRefresh" min="1" max="60" value="5" />
-        </div>
-      </section>
-
-      <!-- Notification Settings -->
-      <section class="settings-panel">
-        <h3>Notifications</h3>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Email Notifications</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="emailNotif" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="emailNotifLabel">Enabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Push Notifications</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="pushNotif" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="pushNotifLabel">Enabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Alert on High Priority</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="highPriorityAlert" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="highPriorityLabel">Enabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Daily Summary Report</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="dailySummary" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="dailySummaryLabel">Enabled</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Data Settings -->
-      <section class="settings-panel">
-        <h3>Data Management</h3>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Data Retention Period</label>
-            <small>Days</small>
-          </div>
-          <input type="number" id="retentionDays" min="7" max="365" value="90" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Records per Page</label>
-          </div>
-          <select id="recordsPerPage">
-            <option value="10">10</option>
-            <option value="25" selected>25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Auto Export Logs</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="autoExport" />
-              <span class="slider"></span>
-            </label>
-            <span id="autoExportLabel">Disabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Export Format</label>
-          </div>
-          <select id="exportFormat">
-            <option value="csv">CSV</option>
-            <option value="json">JSON</option>
-            <option value="excel">Excel</option>
-          </select>
-        </div>
-      </section>
-
-      <!-- Security Settings -->
-      <section class="settings-panel">
-        <h3>Security</h3>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Session Timeout</label>
-            <small>Minutes</small>
-          </div>
-          <input type="number" id="sessionTimeout" min="5" max="480" value="30" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Two-Factor Authentication</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="twoFactorAuth" />
-              <span class="slider"></span>
-            </label>
-            <span id="twoFactorLabel">Disabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Login Notifications</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="loginNotif" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="loginNotifLabel">Enabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>IP Whitelist</label>
-          </div>
-          <input type="text" id="ipWhitelist" placeholder="Enter IP addresses (comma separated)" />
-        </div>
-      </section>
-
-      <!-- User Profile -->
-      <section class="settings-panel">
-        <h3>User Profile</h3>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Full Name</label>
-          </div>
-          <input type="text" id="fullName" placeholder="Your full name" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Email</label>
-          </div>
-          <input type="email" id="email" placeholder="your.email@example.com" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Department</label>
-          </div>
-          <input type="text" id="department" placeholder="Your department" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Role</label>
-          </div>
-          <select id="role">
-            <option value="admin">Administrator</option>
-            <option value="analyst">Analyst</option>
-            <option value="reviewer">Reviewer</option>
-            <option value="viewer">Viewer</option>
-          </select>
-        </div>
-      </section>
-
-      <!-- API Settings -->
-      <section class="settings-panel">
-        <h3>API Settings</h3>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>API Endpoint</label>
-          </div>
-          <input type="text" id="apiEndpoint" placeholder="https://api.example.com" value="http://localhost:5000" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Request Timeout</label>
-            <small>Seconds</small>
-          </div>
-          <input type="number" id="requestTimeout" min="5" max="60" value="30" />
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Retry Failed Requests</label>
-          </div>
-          <div class="toggle-switch">
-            <label class="switch">
-              <input type="checkbox" id="retryRequests" checked />
-              <span class="slider"></span>
-            </label>
-            <span id="retryLabel">Enabled</span>
-          </div>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-label">
-            <label>Max Retries</label>
-          </div>
-          <input type="number" id="maxRetries" min="1" max="10" value="3" />
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="button-group">
-      <button class="btn-primary" id="saveBtn">💾 Save Settings</button>
-      <button class="btn-secondary" id="resetBtn">↻ Reset to Default</button>
-      <button class="btn-secondary" id="exportBtn">📥 Export Settings</button>
-    </div>
-
-    <!-- Info Box -->
-    <div class="info-box">
-      💡 <strong>Tip:</strong> Your settings are automatically saved to your browser's local storage. They will persist
-      across sessions.
-    </div>
-
-    <!-- Footer -->
-    <footer>
-      PRISM Settings & Preferences • Last Modified: <span id="lastModified">--:--</span>
-    </footer>
-
-  </div>
-
-  <script src="ui.js"></script>
-  <script src="settings.js"></script>
-
-</body>
-
-</html>
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --bg-soft: #020617;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --accent-blue: #38bdf8;
+  --accent-green: #4ade80;
+  --accent-red: #f43f5e;
+  --accent-orange: #fb923c;
+
+  --glass-border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Light Mode Theme */
+body.light-mode {
+  --bg-dark: #f8fafc;
+  --bg-card: #e2e8f0;
+  --bg-soft: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --glass-border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .sidebar {
+  background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .sidebar nav a {
+  color: #475569;
+}
+
+body.light-mode .sidebar nav a:hover,
+body.light-mode .sidebar nav a.active {
+  background: rgba(56, 189, 248, 0.15);
+  color: #0284c7;
+}
+
+body.light-mode table {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+body.light-mode table thead th {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+body.light-mode table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+body.light-mode .panel {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+body.light-mode .card {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+body.light-mode input[type="text"],
+body.light-mode input[type="email"],
+body.light-mode input[type="number"],
+body.light-mode select,
+body.light-mode textarea {
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+body.light-mode input[type="text"]:focus,
+body.light-mode input[type="email"]:focus,
+body.light-mode input[type="number"]:focus,
+body.light-mode select:focus,
+body.light-mode textarea:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.1);
+}
+
+body.light-mode .theme-toggle-btn {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+
+
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+
+
+.theme-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+}
+
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #020617, #020617);
+  border-right: var(--glass-border);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  color: var(--accent-blue);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent-blue);
+}
+
+/* ================= LAYOUT ================= */
+.layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 2rem;
+  overflow-y: auto;
+  background: var(--bg-dark);
+}
+
+/* ================= TOPBAR ================= */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.topbar h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.topbar .theme-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.theme-toggle-btn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: var(--text-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--accent-blue);
+}
+
+.theme-toggle-btn.active {
+  background: var(--accent-blue);
+  color: #000;
+  border-color: var(--accent-blue);
+}
+
+.filter-dropdown {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: var(--text-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s ease;
+  appearance: none;
+}
+
+.filter-dropdown:hover,
+.filter-dropdown:focus {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--accent-blue);
+}
+
+.filter-dropdown option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+body.light-mode .filter-dropdown {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body.light-mode .filter-dropdown:hover,
+body.light-mode .filter-dropdown:focus {
+  background-color: rgba(56, 189, 248, 0.1);
+  border-color: var(--accent-blue);
+}
+
+body.light-mode .filter-dropdown option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+/* ================= CARDS ================= */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: rgba(30, 41, 59, 0.85);
+  /* glass */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.card h3 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.card p {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Card accents */
+.alert {
+  border-left: 4px solid var(--accent-red);
+}
+
+.warning {
+  border-left: 4px solid var(--accent-orange);
+}
+
+.success {
+  border-left: 4px solid var(--accent-green);
+}
+
+/* ================= PANELS ================= */
+.panel {
+  background: rgba(30, 41, 59, 0.85);
+  /* glass */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.panel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.panel h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.panel-header h2 {
+  margin-bottom: 0;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* ================= TABS ================= */
+.tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 0.5rem;
+}
+
+body.light-mode .tabs-nav {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body.light-mode .tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.tab-btn.active {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-blue);
+  border-radius: 2px 2px 0 0;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeInTab 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= GRAPH ================= */
+.graph-panel {
+  margin-bottom: 2rem;
+}
+
+.graph-container {
+  height: 400px;
+  position: relative;
+  padding: 1rem;
+}
+
+.graph-placeholder {
+  height: 300px;
+  border-radius: 14px;
+  background: repeating-linear-gradient(45deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.04) 12px,
+      transparent 12px,
+      transparent 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+/* ================= GRID ================= */
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ================= TABLE ================= */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Header */
+th {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(6px);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Cells */
+td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  border-bottom: var(--glass-border);
+}
+
+/* Zebra rows */
+tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Hover interaction */
+tbody tr {
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+tbody tr:hover {
+  background: rgba(56, 189, 248, 0.08);
+  transform: scale(1.004);
+}
+
+/* Align numeric columns (adjust index if needed) */
+td:nth-child(2),
+td:nth-child(3) {
+  text-align: right;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.btn-primary,
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: #000;
+}
+
+.btn-primary:hover {
+  background: #06b6d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.btn-small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+.action-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btns button {
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Confirm */
+.btn-confirm {
+  background: linear-gradient(135deg, var(--accent-green), #22c55e);
+  color: #022c22;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(74, 222, 128, 0.4);
+}
+
+/* Reject */
+.btn-reject {
+  background: linear-gradient(135deg, var(--accent-red), #e11d48);
+  color: #450a0a;
+}
+
+.btn-reject:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(244, 63, 94, 0.4);
+}
+
+.status-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.pending {
+  background: rgba(251, 146, 60, 0.15);
+  color: var(--accent-orange);
+}
+
+.status-badge.confirmed {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--accent-green);
+}
+
+.status-badge.rejected {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--accent-red);
+}
+
+
+/* ================= ALERT LIST ================= */
+.alerts {
+  list-style: none;
+}
+
+.alerts li {
+  padding: 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.alerts .high {
+  background: rgba(244, 63, 94, 0.12);
+  color: var(--accent-red);
+}
+
+.alerts .medium {
+  background: rgba(251, 146, 60, 0.12);
+  color: var(--accent-orange);
+}
+
+.alerts .low {
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--accent-green);
+}
+
+/* ================= FOOTER ================= */
+footer {
+  margin-top: auto;
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ================= SCROLLBAR ================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.10), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(192, 132, 252, 0.10), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(74, 222, 128, 0.08), transparent 45%);
+  z-index: -1;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+      transparent 55%,
+      rgba(0, 0, 0, 0.45));
+  z-index: -2;
+}
