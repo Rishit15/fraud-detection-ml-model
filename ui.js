@@ -1,7 +1,8 @@
 /* ================================
    CONFIG
 ================================ */
-window.API_BASE_URL = "http://127.0.0.1:5000/api";
+const _prismSettings = JSON.parse(localStorage.getItem('prismSettings')) || {};
+window.API_BASE_URL = _prismSettings.apiEndpoint || (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:5000/api");
   
     /* ================================
     THEME MANAGEMENT
@@ -257,8 +258,12 @@ window.API_BASE_URL = "http://127.0.0.1:5000/api";
     // Clear rows
     tbody.innerHTML = "";
 
-    // Populate top 10 rows safely
-    data.slice(0, 10).forEach(item => {
+    // Retrieve settings for records per page
+    const settings = JSON.parse(localStorage.getItem('prismSettings')) || {};
+    const limit = settings.recordsPerPage ? parseInt(settings.recordsPerPage) : 10;
+
+    // Populate top rows safely
+    data.slice(0, limit).forEach(item => {
       const row = document.createElement("tr");
       
       // Safe property access
@@ -287,6 +292,26 @@ window.API_BASE_URL = "http://127.0.0.1:5000/api";
     
     // Render analytics chart
     renderAnalyticsChart(data);
+
+    // Update System Alerts (Notifications)
+    const alertList = document.querySelector(".alerts");
+    if (alertList) {
+      alertList.innerHTML = "";
+      const pendingAnomalies = data.filter(item => item.status === "Pending");
+      if (pendingAnomalies.length === 0) {
+        alertList.innerHTML = `<li class="low">No active alerts. System is clean.</li>`;
+      } else {
+        pendingAnomalies.slice(0, 4).forEach(item => {
+          const isHighValue = Number(item.tender_value_amount || 0) > 5000000;
+          const li = document.createElement("li");
+          li.className = isHighValue ? "high" : "medium";
+          li.textContent = isHighValue 
+            ? `High-value flagged (${item.tender_id})`
+            : `Anomaly detected (${item.tender_id})`;
+          alertList.appendChild(li);
+        });
+      }
+    }
   }
 
 
@@ -305,11 +330,14 @@ window.API_BASE_URL = "http://127.0.0.1:5000/api";
       
       // Refresh dashboard
       const freshData = await fetchDashboardData();
-      renderDashboard(freshData);
+      if (document.getElementById("kpi-transfers")) {
+        renderDashboard(freshData);
+      }
       
     } catch (error) {
       console.error('Update failed:', error);
       alert('Update failed: ' + error.message);
+      throw error;
     }
   }
   
